@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Motion Designer &amp; Video Editor — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ──────────────────────────────────────────── */
+:root {
+  --bg: #080808;
+  --bg2: #0e0e0e;
+  --fg: #f0ede8;
+  --fg2: rgba(240,237,232,.52);
+  --fg3: rgba(240,237,232,.1);
+  --fg4: rgba(240,237,232,.05);
+  --cyan: oklch(0.78 0.18 196);
+  --cyan-dim: oklch(0.78 0.18 196 / .22);
+  --gold: oklch(0.79 0.17 68);
+  --gold-dim: oklch(0.79 0.17 68 / .22);
+  --purple: oklch(0.62 0.26 295);
+  --nav: 68px;
+  --r: 14px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:'DM Sans',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img,video{display:block;max-width:100%}
+a{text-decoration:none;color:inherit}
+
+/* grain */
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9000;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity:.028}
+
+/* ── NAV ─────────────────────────────────────────────── */
+nav{position:fixed;inset:0 0 auto;height:var(--nav);z-index:800;
+  display:flex;align-items:center;justify-content:space-between;padding:0 56px;
+  background:rgba(8,8,8,.82);backdrop-filter:blur(28px) saturate(1.4);
+  border-bottom:1px solid var(--fg3);transition:background .3s}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;letter-spacing:-.04em}
+.logo em{font-style:normal;color:var(--cyan);transition:color .3s}
+.nav-r{display:flex;align-items:center;gap:4px;list-style:none}
+.tab-link,.nav-cta{font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;
+  padding:8px 18px;border-radius:100px;cursor:pointer;transition:all .25s;color:var(--fg2)}
+.tab-link:hover{color:var(--fg);background:var(--fg3)}
+.tab-link.active{color:var(--fg);background:rgba(240,237,232,.09)}
+.nav-cta{background:var(--cyan);color:#040404;font-weight:600;margin-left:8px}
+.nav-cta:hover{filter:brightness(1.1);transform:translateY(-1px)}
+
+/* ── APP ─────────────────────────────────────────────── */
+.app{padding-top:var(--nav);position:relative}
+.page{display:none;position:relative}
+.page.active{display:block}
+.page.entering{animation:pageIn .55s cubic-bezier(.4,0,.2,1) both}
+@keyframes pageIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
+@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-30px)}}
+
+/* ── SCROLL LINE ─────────────────────────────────────── */
+.line-svg{position:absolute;top:0;left:0;width:100%;pointer-events:none;z-index:0;overflow:visible}
+.l-glow{fill:none;stroke-width:10;opacity:.18;stroke-linecap:round}
+.l-main{fill:none;stroke-width:1.6;opacity:.9;stroke-linecap:round;stroke-linejoin:round}
+.l-dot{transition:opacity .3s}
+#svg-p .l-glow,#svg-p .l-main{stroke:var(--cyan)}
+#svg-p .l-dot{fill:var(--cyan);filter:drop-shadow(0 0 5px var(--cyan))}
+#svg-g .l-glow,#svg-g .l-main{stroke:var(--gold)}
+#svg-g .l-dot{fill:var(--gold);filter:drop-shadow(0 0 5px var(--gold))}
+
+/* ── HERO ────────────────────────────────────────────── */
+.hero{min-height:calc(100vh - var(--nav));display:flex;flex-direction:column;
+  justify-content:flex-end;padding:0 80px 96px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.11}
+.o1{width:680px;height:680px;background:var(--cyan);top:-180px;right:-80px;animation:drift 14s ease-in-out infinite}
+.o2{width:480px;height:480px;background:var(--gold);bottom:-80px;left:12%;animation:drift 18s ease-in-out infinite reverse}
+.hero-c{position:relative;z-index:1}
+.hero-eye{font-size:11px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--cyan);
+  margin-bottom:28px;opacity:0;animation:fadeUp .7s .15s both}
+.hero-h1{font-family:'Syne',sans-serif;font-size:clamp(52px,8vw,122px);font-weight:800;
+  line-height:.9;letter-spacing:-.05em;margin-bottom:36px;opacity:0;animation:fadeUp .7s .3s both}
+.h1-out{color:transparent;-webkit-text-stroke:1.5px rgba(240,237,232,.28)}
+.hero-sub{font-size:clamp(15px,1.4vw,18px);color:var(--fg2);max-width:460px;
+  line-height:1.7;margin-bottom:48px;opacity:0;animation:fadeUp .7s .45s both}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;opacity:0;animation:fadeUp .7s .6s both}
+
+/* ── BUTTONS ─────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 30px;border-radius:100px;
+  font-size:14px;font-weight:500;cursor:pointer;transition:all .25s;border:none;font-family:inherit}
+.btn-w{background:var(--fg);color:var(--bg)}
+.btn-w:hover{background:var(--cyan);transform:translateY(-2px)}
+.btn-o{background:transparent;color:var(--fg);border:1px solid var(--fg3)}
+.btn-o:hover{border-color:rgba(240,237,232,.38);transform:translateY(-2px)}
+.btn-g{background:var(--gold);color:#030303}
+.btn-g:hover{filter:brightness(1.1);transform:translateY(-2px)}
+
+/* ── SECTIONS ────────────────────────────────────────── */
+.sec{padding:112px 80px;position:relative}
+.sec-label{font-size:10.5px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--cyan);margin-bottom:14px}
+.sec-h2{font-family:'Syne',sans-serif;font-size:clamp(30px,3.8vw,52px);font-weight:700;
+  letter-spacing:-.035em;line-height:1.05;margin-bottom:60px}
+
+/* ── VIDEO CARDS ─────────────────────────────────────── */
+.grid{display:grid;gap:20px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+
+.vcard{border-radius:var(--r);overflow:hidden;cursor:pointer;position:relative;
+  background:var(--bg2);transition:transform .4s cubic-bezier(.4,0,.2,1),box-shadow .4s}
+.vcard:hover{transform:translateY(-5px);box-shadow:0 28px 64px -16px rgba(0,0,0,.65)}
+.vcard::before{content:'';position:absolute;inset:0;border-radius:var(--r);
+  border:1px solid var(--fg3);z-index:5;pointer-events:none;transition:border-color .3s}
+.vcard:hover::before{border-color:rgba(240,237,232,.14)}
+.vcard::after{content:'';position:absolute;inset:-1px;border-radius:calc(var(--r) + 1px);
+  box-shadow:0 0 0 0 var(--cyan-dim);transition:box-shadow .45s;pointer-events:none;z-index:3}
+.vcard:hover::after{box-shadow:0 0 32px 5px var(--cyan-dim)}
+
+.vwrap{position:relative;overflow:hidden;background:#0b0b0e}
+.r169{aspect-ratio:16/9}.r916{aspect-ratio:9/16}.r219{aspect-ratio:21/9}.r11{aspect-ratio:1/1}
+.vwrap video{width:100%;height:100%;object-fit:cover;transition:transform .55s cubic-bezier(.4,0,.2,1)}
+.vcard:hover .vwrap video{transform:scale(1.04)}
+
+/* placeholder */
+.vph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:14px;
+  background:repeating-linear-gradient(-45deg,transparent,transparent 28px,rgba(255,255,255,.008) 28px,rgba(255,255,255,.008) 29px),
+  linear-gradient(155deg,#0c0c13 0%,#090909 55%,#0c100c 100%);pointer-events:none}
+.vph-ring{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--fg3);
+  display:flex;align-items:center;justify-content:center}
+.vph-lbl{font-family:monospace;font-size:10px;color:rgba(240,237,232,.17);
+  letter-spacing:.05em;text-align:center;line-height:1.9}
+.vover{position:absolute;inset:0;background:rgba(0,0,0,0);transition:background .3s;z-index:2}
+.vcard:hover .vover{background:rgba(0,0,0,.14)}
+
+/* card info */
+.vcinfo{padding:18px 20px 20px;position:relative;z-index:4}
+.vct{font-family:'Syne',sans-serif;font-size:15.5px;font-weight:600;letter-spacing:-.02em;margin-bottom:5px}
+.vcd{font-size:12.5px;color:var(--fg2);line-height:1.55;margin-bottom:10px}
+.tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag{font-size:9.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 9px;border-radius:100px;background:var(--fg4);color:var(--fg2)}
+
+/* featured */
+.feat{border-radius:var(--r);overflow:hidden;cursor:pointer;position:relative;margin-bottom:20px}
+.feat .vwrap{aspect-ratio:21/9}
+.feat::before{content:'';position:absolute;inset:0;border-radius:var(--r);
+  border:1px solid var(--fg3);z-index:5;pointer-events:none}
+.feat-ov{position:absolute;bottom:0;left:0;right:0;padding:40px 40px 36px;
+  background:linear-gradient(to top,rgba(8,8,8,.96) 0%,transparent 100%);z-index:4}
+.feat-title{font-family:'Syne',sans-serif;font-size:26px;font-weight:700;
+  letter-spacing:-.03em;margin-bottom:7px}
+.feat-desc{font-size:13.5px;color:var(--fg2);margin-bottom:12px}
+.feat video{transition:transform .6s cubic-bezier(.4,0,.2,1)}
+.feat:hover video{transform:scale(1.03)}
+
+/* ── ABOUT ───────────────────────────────────────────── */
+.about-g{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.about-h2{font-family:'Syne',sans-serif;font-size:clamp(28px,3.5vw,48px);font-weight:700;
+  letter-spacing:-.04em;line-height:1.08;margin-bottom:22px}
+.about-p{font-size:15.5px;color:var(--fg2);line-height:1.82;margin-bottom:14px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.stat{padding:28px;border-radius:var(--r);border:1px solid var(--fg3);background:var(--fg4)}
+.stat-n{font-family:'Syne',sans-serif;font-size:44px;font-weight:800;letter-spacing:-.05em;
+  color:var(--cyan);line-height:1;margin-bottom:6px}
+.stat-l{font-size:12px;color:var(--fg2)}
+
+/* ── CONTACT ─────────────────────────────────────────── */
+.contact{padding:100px 80px 140px;text-align:center;position:relative}
+.contact h2{font-family:'Syne',sans-serif;font-size:clamp(44px,7vw,104px);
+  font-weight:800;letter-spacing:-.05em;line-height:.9;margin-bottom:24px}
+.contact p{font-size:17px;color:var(--fg2);margin-bottom:48px;line-height:1.6}
+
+/* ── FOOTER ──────────────────────────────────────────── */
+footer{padding:34px 80px;border-top:1px solid var(--fg3);
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:12px;color:var(--fg2)}
+
+/* ── REVEAL ──────────────────────────────────────────── */
+.reveal{opacity:0;transform:translateY(34px);
+  transition:opacity .75s ease,transform .75s cubic-bezier(.4,0,.2,1)}
+.reveal.vis{opacity:1;transform:translateY(0)}
+.reveal:nth-child(2){transition-delay:.08s}
+.reveal:nth-child(3){transition-delay:.16s}
+.reveal:nth-child(4){transition-delay:.24s}
+.reveal:nth-child(5){transition-delay:.32s}
+.reveal:nth-child(6){transition-delay:.4s}
+
+/* ── GAMBLING PITCH ──────────────────────────────────── */
+.g-pitch{min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:120px 80px 140px;position:relative;overflow:hidden;overflow:visible}
+.g-icons{position:absolute;inset:0;pointer-events:none;z-index:0}
+.g-icon{position:absolute;font-size:clamp(28px,4vw,56px);opacity:0.07;
+  user-select:none;will-change:transform;filter:drop-shadow(0 0 12px var(--gold))}
+.g-pitch-inner{position:relative;z-index:1;max-width:780px;text-align:center}
+.g-pitch-h{font-family:'Syne',sans-serif;font-size:clamp(34px,5vw,72px);font-weight:800;
+  letter-spacing:-.04em;line-height:1.0;margin-bottom:36px}
+.g-pitch-h em{font-style:normal;color:var(--gold)}
+.g-pitch-p{font-size:clamp(15px,1.4vw,18px);color:var(--fg2);line-height:1.8;
+  max-width:640px;margin:0 auto 18px}
+.g-pitch-tags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:36px 0}
+.g-pitch-cta{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+
+/* ── GAMBLING OVERRIDES ──────────────────────────────── */
+#page-g .sec-label{color:var(--gold)}
+#page-g .stat-n{color:var(--gold)}
+#page-g .vcard::after{box-shadow:0 0 0 0 var(--gold-dim)}
+#page-g .vcard:hover::after{box-shadow:0 0 32px 5px var(--gold-dim)}
+#page-g .hero-eye{color:var(--gold)}
+.g-vph{background:repeating-linear-gradient(-45deg,transparent,transparent 28px,rgba(255,255,255,.007) 28px,rgba(255,255,255,.007) 29px),
+  linear-gradient(155deg,#100800 0%,#090909 55%,#080010 100%) !important}
+.gtag{background:rgba(255,178,0,.07) !important;color:var(--gold) !important}
+
+/* ── RESPONSIVE ──────────────────────────────────────── */
+@media(max-width:1024px){
+  nav{padding:0 32px}
+  .hero,.sec,.contact{padding-left:32px;padding-right:32px}
+  .hero{padding-bottom:72px}
+  .g3{grid-template-columns:repeat(2,1fr)}
+  .about-g{grid-template-columns:1fr;gap:48px}
+  footer{padding:28px 32px}
+}
+@media(max-width:768px){
+  nav{padding:0 20px}
+  .tab-link,.nav-cta{padding:6px 12px;font-size:11px}
+  .hero,.sec,.contact{padding-left:20px;padding-right:20px}
+  .hero{padding-bottom:56px}
+  .g2,.g3{grid-template-columns:1fr}
+  .hero-btns{flex-direction:column;align-items:flex-start}
+  footer{flex-direction:column;gap:10px;text-align:center;padding:24px 20px}
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a class="logo" href="#">craft<em>.</em></a>
+  <ul class="nav-r">
+    <li><a class="tab-link active" data-tab="p">Portfolio</a></li>
+    <li><a class="tab-link" data-tab="g">Gambling</a></li>
+    <li><a class="nav-cta" id="cta-contact">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="app">
+
+<!-- ══════════════════════════════════════════════════════
+     PORTFOLIO PAGE
+══════════════════════════════════════════════════════ -->
+<div class="page active" id="page-p">
+
+  <!-- animated scroll line SVG -->
+  <svg class="line-svg" id="svg-p" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="glow-p" x="-30%" y="-10%" width="160%" height="120%">
+        <feGaussianBlur stdDeviation="5" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <path class="l-glow" id="p-glow" d="" filter="url(#glow-p)"/>
+    <path class="l-main" id="p-main" d=""/>
+    <circle class="l-dot" id="p-dot" r="4" cx="0" cy="-200" opacity="0"/>
+    <circle class="l-dot" id="p-dot2" r="2.5" cx="0" cy="-200" opacity="0" style="fill:var(--fg)"/>
+  </svg>
+
+  <!-- HERO -->
+  <section class="hero" id="p-hero">
+    <div class="hero-bg">
+      <div class="orb o1"></div>
+      <div class="orb o2"></div>
+    </div>
+    <div class="hero-c">
+      <p class="hero-eye">Available for projects &nbsp;·&nbsp; 2026</p>
+      <h1 class="hero-h1">Motion<br><span class="h1-out">Designer</span><br>&amp; Editor</h1>
+      <p class="hero-sub">Creating high-performing visuals for brands, apps and social media.</p>
+      <div class="hero-btns">
+        <a class="btn btn-w" href="#p-featured">View Works</a>
+        <a class="btn btn-o" href="#p-contact">Contact Me</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED WORKS -->
+  <section class="sec" id="p-featured">
+    <p class="sec-label reveal">Featured Works</p>
+    <h2 class="sec-h2 reveal">Selected projects</h2>
+
+    <div class="feat reveal">
+      <div class="vwrap r916" style="max-height:85vh">
+        <video autoplay muted loop playsinline>
+          <source src="videos/motion_4.mp4" type="video/mp4">
+        </video>
+        <div class="vover"></div>
+      </div>
+      <div class="feat-ov">
+        <div class="tags" style="margin-bottom:10px">
+          <span class="tag">Motion Design</span><span class="tag">Brand Identity</span><span class="tag">2025</span>
+        </div>
+        <p class="feat-title">Brand Campaign — Fintech 2025</p>
+        <p class="feat-desc">Full-scale brand motion campaign for a fintech startup.</p>
+      </div>
+    </div>
+
+    <div class="grid g2">
+      <div class="vcard reveal">
+        <div class="vwrap r916">
+          <video autoplay muted loop playsinline><source src="videos/reels_3.mp4" type="video/mp4"></video>
+          <div class="vover"></div>
+        </div>
+        <div class="vcinfo">
+          <p class="vct">Reels for house selling company</p>
+          <p class="vcd">High-energy launch video for a B2C mobile app. 60s hero spot format.</p>
+          <div class="tags"><span class="tag">Motion Design</span><span class="tag">After Effects</span><span class="tag">Video Editing</span></div>
+        </div>
+      </div>
+      <div class="vcard reveal">
+        <div class="vwrap r916">
+          <video autoplay muted loop playsinline><source src="videos/motion_2.mp4" type="video/mp4"></video>
+          <div class="vover"></div>
+        </div>
+        <div class="vcinfo">
+          <p class="vct">Product Visual Story</p>
+          <p class="vcd">E-commerce product storytelling. Shot, edited and graded in-house.</p>
+          <div class="tags"><span class="tag">Product Video</span><span class="tag">Color Grade</span><span class="tag">Ads</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHORT-FORM ADS -->
+  <section class="sec" id="p-reels">
+    <p class="sec-label reveal">Short-form Ads</p>
+    <h2 class="sec-h2 reveal">Scroll-stopping<br>reels &amp; ads</h2>
+    <div class="grid g3">
+      <div class="vcard reveal">
+        <div class="vwrap r916">
+          <video autoplay muted loop playsinline><source src="videos/reels.mp4" type="video/mp4"></video>
+          <div class="vover"></div>
+        </div>
+      </div>
+      <div class="vcard reveal">
+        <div class="vwrap r916">
+          <video autoplay muted loop playsinline><source src="videos/reels_2.mp4" type="video/mp4"></video>
+          <div class="vover"></div>
+        </div>
+      </div>
+      <div class="vcard reveal">
+        <div class="vwrap r916">
+          <video autoplay muted loop playsinline><source src="videos/reels_4.mp4" type="video/mp4"></video>
+          <div class="vover"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- APP / PRODUCT -->
+  <section class="sec" id="p-app">
+    <p class="sec-label reveal">App &amp; Product</p>
+    <h2 class="sec-h2 reveal">Product<br>storytelling</h2>
+    <div class="grid g2">
+      <div class="vcard reveal">
+        <div class="vwrap r916">
+          <video autoplay muted loop playsinline><source src="videos/motion_3.mp4" type="video/mp4"></video>
+          <div class="vover"></div>
+        </div>
+        <div class="vcinfo">
+          <p class="vct">Simple motion ad</p>
+          <p class="vcd">Clean, minimal motion ad built for performance across social platforms.</p>
+          <div class="tags"><span class="tag">Motion Ad</span><span class="tag">Social</span></div>
+        </div>
+      </div>
+      <div class="vcard reveal">
+        <div class="vwrap r916">
+          <video autoplay muted loop playsinline><source src="videos/motion_4.mp4" type="video/mp4"></video>
+          <div class="vover"></div>
+        </div>
+        <div class="vcinfo">
+          <p class="vct">Crypto Brand AD</p>
+          <p class="vcd">Bold, high-energy brand video for a crypto platform launch. Built for trust and conversion.</p>
+          <div class="tags"><span class="tag">Crypto</span><span class="tag">Brand Ad</span><span class="tag">Web3</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FACEBOOK ADS -->
+  <section class="sec" id="p-motion">
+    <p class="sec-label reveal">Facebook Ads</p>
+    <h2 class="sec-h2 reveal">Facebook ads</h2>
+    <div class="grid g2">
+      <div class="vcard reveal">
+        <div class="vwrap r916">
+          <video autoplay muted loop playsinline><source src="videos/motion_5.mp4" type="video/mp4"></video>
+          <div class="vover"></div>
+        </div>
+        <div class="vcinfo">
+          <p class="vct">Shop App</p>
+          <p class="vcd">High-converting Facebook ad for a shopping app. Scroll-stop hook, product-focused creative.</p>
+          <div class="tags"><span class="tag">Facebook Ads</span><span class="tag">E-commerce</span></div>
+        </div>
+      </div>
+      <div class="vcard reveal">
+        <div class="vwrap r916">
+          <video autoplay muted loop playsinline><source src="videos/motion_2.mp4" type="video/mp4"></video>
+          <div class="vover"></div>
+        </div>
+        <div class="vcinfo">
+          <p class="vct">Dating app</p>
+          <p class="vcd">Engaging Facebook ad for a dating app. Emotion-driven storytelling built for match-rate uplift.</p>
+          <div class="tags"><span class="tag">Facebook Ads</span><span class="tag">Dating</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="sec" id="p-about">
+    <div class="about-g">
+      <div>
+        <p class="sec-label reveal">About Me</p>
+        <h2 class="about-h2 reveal">Crafting visuals<br>that move people<br>— and convert</h2>
+        <p class="about-p reveal">Motion designer and video editor with 3+ years creating scroll-stopping content for global brands, apps, and social platforms.</p>
+        <p class="about-p reveal">From concept to final render — I own the full pipeline: storyboarding, animation, editing, color grading and multi-format delivery.</p>
+        <div class="hero-btns reveal" style="margin-top:32px">
+          <a class="btn btn-o" href="mailto:your@email.com">Get in touch</a>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat reveal"><p class="stat-n">3+</p><p class="stat-l">Years of experience</p></div>
+        <div class="stat reveal"><p class="stat-n">120</p><p class="stat-l">Projects delivered</p></div>
+        <div class="stat reveal"><p class="stat-n">40+</p><p class="stat-l">Happy clients</p></div>
+        <div class="stat reveal"><p class="stat-n">12+</p><p class="stat-l">Industries covered</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="p-contact">
+    <h2 class="reveal">Let's<br>work<br>together</h2>
+    <p class="reveal">Have a project in mind? Let's make something great.</p>
+    <div class="hero-btns reveal" style="justify-content:center">
+      <a class="btn btn-w" href="mailto:selegey03@gmail.com">selegey03@gmail.com</a>
+      <a class="btn btn-o" href="https://t.me/marcooffc" target="_blank">Telegram</a>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2026 Motion Designer &amp; Video Editor</span>
+    <span>Based anywhere &nbsp;·&nbsp; Available worldwide</span>
+  </footer>
+
+</div><!-- /page-p -->
+
+
+<!-- ══════════════════════════════════════════════════════
+     GAMBLING PAGE
+══════════════════════════════════════════════════════ -->
+<div class="page" id="page-g">
+
+  <svg class="line-svg" id="svg-g" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="glow-g" x="-30%" y="-10%" width="160%" height="120%">
+        <feGaussianBlur stdDeviation="5" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <path class="l-glow" id="g-glow" d="" filter="url(#glow-g)"/>
+    <path class="l-main" id="g-main" d=""/>
+    <circle class="l-dot" id="g-dot" r="4" cx="0" cy="-200" opacity="0"/>
+    <circle class="l-dot" id="g-dot2" r="2.5" cx="0" cy="-200" opacity="0" style="fill:var(--fg)"/>
+  </svg>
+
+  <!-- GAMBLING HERO -->
+  <section class="hero" id="g-hero">
+    <div class="hero-bg">
+      <div class="orb" style="width:640px;height:640px;background:var(--gold);top:-160px;right:-60px;opacity:.1;animation:drift 13s ease-in-out infinite;filter:blur(100px)"></div>
+      <div class="orb" style="width:440px;height:440px;background:var(--purple);bottom:-100px;left:8%;opacity:.08;animation:drift 17s ease-in-out infinite reverse;filter:blur(100px)"></div>
+      <div class="orb" style="width:300px;height:300px;background:oklch(0.58 0.22 12);top:30%;right:20%;opacity:.06;animation:drift 20s ease-in-out infinite;filter:blur(80px)"></div>
+    </div>
+    <div class="hero-c">
+      <p class="hero-eye">iGaming &nbsp;·&nbsp; Casino &nbsp;·&nbsp; Betting</p>
+      <h1 class="hero-h1">iGaming<br><span class="h1-out">Gambling</span><br>Creatives</h1>
+      <p class="hero-sub">High-converting video creatives for casino, betting and iGaming brands.</p>
+      <div class="hero-btns">
+        <a class="btn btn-g" href="#g-contact">Get in Touch</a>
+        <a class="btn btn-o" href="#g-contact">Let's talk</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- GAMBLING PITCH -->
+  <section class="g-pitch" id="g-contact">
+    <!-- floating casino icons -->
+    <div class="g-icons" id="g-icons-bg"></div>
+
+    <div class="g-pitch-inner reveal">
+      <p class="sec-label" style="color:var(--gold);margin-bottom:18px">iGaming Creatives</p>
+      <h2 class="g-pitch-h">Are you a media buyer<br>or an iGaming team<br>looking for creatives<br>that <em>actually convert?</em></h2>
+      <p class="g-pitch-p">I specialise in high-performing video creatives for the iGaming niche — casino ads, slot promos, bonus offers, UGC-style content and app previews. Every piece is built to stop the scroll, hold attention and drive installs or deposits.</p>
+      <p class="g-pitch-p">I don't post work publicly in this niche. Reach out and I'll share a private portfolio with examples tailored to your traffic source and GEO.</p>
+      <div class="g-pitch-tags">
+        <span class="tag gtag">Casino Ads</span>
+        <span class="tag gtag">Slot Creatives</span>
+        <span class="tag gtag">Bonus &amp; Free Spins</span>
+        <span class="tag gtag">UGC Style</span>
+        <span class="tag gtag">App Promos</span>
+        <span class="tag gtag">Meta · TikTok · Google</span>
+      </div>
+      <div class="g-pitch-cta">
+        <a class="btn btn-g" href="mailto:selegey03@gmail.com">selegey03@gmail.com</a>
+        <a class="btn btn-o" href="https://t.me/marcooffc" target="_blank">Telegram — @marcooffc</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2026 Motion Designer &amp; Video Editor</span>
+    <span>iGaming Creatives &nbsp;·&nbsp; Available worldwide</span>
+  </footer>
+
+</div><!-- /page-g -->
+</div><!-- /app -->
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   SCROLL LINE ENGINE
+═══════════════════════════════════════════════════════ */
+var lineCache = {};
+
+function buildLine(pageId) {
+  var page = document.getElementById(pageId);
+  if (!page || page.style.display === 'none') return;
+
+  var isP = pageId === 'page-p';
+  var svgEl  = document.getElementById(isP ? 'svg-p' : 'svg-g');
+  var mPath  = document.getElementById(isP ? 'p-main' : 'g-main');
+  var gPath  = document.getElementById(isP ? 'p-glow' : 'g-glow');
+  var dot    = document.getElementById(isP ? 'p-dot'  : 'g-dot');
+  var dot2   = document.getElementById(isP ? 'p-dot2' : 'g-dot2');
+
+  requestAnimationFrame(function() {
+    var W = page.offsetWidth;
+    var H = page.scrollHeight;
+    var cx = W * 0.5;
+    var amp = Math.min(W * 0.22, 240);
+
+    svgEl.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    svgEl.style.height = H + 'px';
+
+    /* collect sections as waypoints */
+    var secs = page.querySelectorAll('.hero, .sec, .contact');
+    var pts = [{ x: cx, y: 0 }];
+
+    for (var i = 0; i < secs.length; i++) {
+      var sec = secs[i];
+      var t = sec.offsetTop;
+      var h = sec.offsetHeight;
+      var side = (i % 2 === 0) ? 1 : -1;
+
+      /* two smooth waypoints per section — clean serpentine, no card collisions */
+      pts.push({ x: cx + side * amp,        y: t + h * 0.25 });
+      pts.push({ x: cx - side * amp * 0.45, y: t + h * 0.75 });
+    }
+
+    pts.push({ x: cx, y: H });
+
+    /* sort waypoints by y to ensure monotone path */
+    pts.sort(function(a, b) { return a.y - b.y; });
+
+    /* cubic bezier smooth pass */
+    var d = 'M ' + pts[0].x.toFixed(1) + ',' + pts[0].y.toFixed(1);
+    for (var k = 1; k < pts.length; k++) {
+      var p0 = pts[k - 1];
+      var p1 = pts[k];
+      var dy = (p1.y - p0.y) * 0.48;
+      d += ' C ' + p0.x.toFixed(1) + ',' + (p0.y + dy).toFixed(1) +
+           ' '   + p1.x.toFixed(1) + ',' + (p1.y - dy).toFixed(1) +
+           ' '   + p1.x.toFixed(1) + ',' + p1.y.toFixed(1);
+    }
+
+    mPath.setAttribute('d', d);
+    gPath.setAttribute('d', d);
+
+    var len = mPath.getTotalLength();
+    lineCache[pageId] = { len: len, mPath: mPath, gPath: gPath, dot: dot, dot2: dot2 };
+
+    mPath.style.strokeDasharray = len;
+    gPath.style.strokeDasharray = len;
+    mPath.style.strokeDashoffset = len;
+    gPath.style.strokeDashoffset = len;
+
+    tickLine(pageId);
+  });
+}
+
+function tickLine(pageId) {
+  var d = lineCache[pageId];
+  if (!d) return;
+
+  var scrollTop = window.scrollY;
+  var maxScroll  = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+  var progress   = Math.min(scrollTop / maxScroll, 1);
+
+  /* small lead-in so line is visible right away */
+  var drawn  = d.len * (progress + 0.04);
+  var offset = Math.max(0, d.len - drawn);
+
+  d.mPath.style.strokeDashoffset = offset;
+  d.gPath.style.strokeDashoffset = offset;
+
+  /* move glowing dot to tip */
+  try {
+    var safe = Math.min(drawn, d.len - 1);
+    var pt   = d.mPath.getPointAtLength(safe);
+    d.dot.setAttribute('cx',  pt.x);
+    d.dot.setAttribute('cy',  pt.y);
+    d.dot2.setAttribute('cx', pt.x);
+    d.dot2.setAttribute('cy', pt.y);
+    var vis = (progress > 0.005) ? '1' : '0';
+    d.dot.setAttribute('opacity',  vis);
+    d.dot2.setAttribute('opacity', vis);
+  } catch(e) {}
+}
+
+/* ═══════════════════════════════════════════════════════
+   TAB SWITCHING
+═══════════════════════════════════════════════════════ */
+var activePage = 'page-p';
+
+function switchTab(tab) {
+  var target = 'page-' + tab;
+  if (target === activePage) return;
+
+  var oldEl = document.getElementById(activePage);
+  var newEl = document.getElementById(target);
+
+  /* update nav */
+  document.querySelectorAll('.tab-link').forEach(function(a) {
+    a.classList.toggle('active', a.dataset.tab === tab);
+  });
+  /* gold accent for gambling nav */
+  document.querySelector('.logo em').style.color = tab === 'g' ? 'var(--gold)' : 'var(--cyan)';
+  document.querySelector('.nav-cta').style.background = tab === 'g' ? 'var(--gold)' : 'var(--cyan)';
+
+  /* fade out */
+  oldEl.style.transition = 'opacity .38s ease, transform .38s ease';
+  oldEl.style.opacity = '0';
+  oldEl.style.transform = 'translateY(14px)';
+
+  setTimeout(function() {
+    oldEl.style.display = 'none';
+    oldEl.style.transition = oldEl.style.opacity = oldEl.style.transform = '';
+
+    newEl.style.display = 'block';
+    newEl.classList.add('entering');
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() { newEl.classList.remove('entering'); });
+    });
+
+    activePage = target;
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    setupReveal(newEl);
+    setTimeout(function() { buildLine(target); }, 60);
+  }, 380);
+}
+
+/* ═══════════════════════════════════════════════════════
+   INTERSECTION OBSERVER — REVEAL
+═══════════════════════════════════════════════════════ */
+function setupReveal(container) {
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('vis');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+  container.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el); });
+}
+
+/* ═══════════════════════════════════════════════════════
+   NAV EVENTS
+═══════════════════════════════════════════════════════ */
+document.querySelectorAll('.tab-link').forEach(function(a) {
+  a.addEventListener('click', function(e) { e.preventDefault(); switchTab(a.dataset.tab); });
+});
+
+document.getElementById('cta-contact').addEventListener('click', function(e) {
+  e.preventDefault();
+  var suffix = activePage === 'page-p' ? 'p-contact' : 'g-contact';
+  var el = document.getElementById(suffix);
+  if (el) window.scrollTo({ top: el.offsetTop - 80, behavior: 'smooth' });
+});
+
+/* ═══════════════════════════════════════════════════════
+   SCROLL + RESIZE
+═══════════════════════════════════════════════════════ */
+window.addEventListener('scroll', function() { tickLine(activePage); }, { passive: true });
+
+var resizeTimer;
+window.addEventListener('resize', function() {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(function() { buildLine(activePage); }, 180);
+});
+
+/* ═══════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════ */
+setupReveal(document.getElementById('page-p'));
+setTimeout(function() { buildLine('page-p'); }, 120);
+
+/* ═══════════════════════════════════════════════════════
+   CASINO FLOATING ICONS
+═══════════════════════════════════════════════════════ */
+(function() {
+  var icons = ['🎰','🃏','🎲','💎','🪙','🎴','♠️','♥️','♦️','♣️','🎯','💰','🏆','🎪','🌟'];
+  var container = document.getElementById('g-icons-bg');
+  if (!container) return;
+
+  var items = [];
+  var count = 28;
+
+  for (var i = 0; i < count; i++) {
+    var el = document.createElement('span');
+    el.className = 'g-icon';
+    el.textContent = icons[i % icons.length];
+
+    var x = Math.random() * 100;
+    var y = Math.random() * 100;
+    var speed = 0.04 + Math.random() * 0.12; /* parallax depth */
+    var rot = Math.random() * 360;
+    var rotSpeed = (Math.random() - 0.5) * 0.02;
+    var scale = 0.6 + Math.random() * 0.9;
+
+    el.style.cssText = 'left:' + x + '%;top:' + y + '%;transform:rotate(' + rot + 'deg) scale(' + scale + ')';
+    container.appendChild(el);
+    items.push({ el: el, x: x, y: y, speed: speed, rot: rot, rotSpeed: rotSpeed, scale: scale });
+  }
+
+  window.addEventListener('scroll', function() {
+    if (activePage !== 'page-g') return;
+    var sy = window.scrollY;
+    for (var i = 0; i < items.length; i++) {
+      var it = items[i];
+      var dy = sy * it.speed;
+      var r  = it.rot + sy * it.rotSpeed;
+      it.el.style.transform = 'translateY(' + (-dy) + 'px) rotate(' + r + 'deg) scale(' + it.scale + ')';
+    }
+  }, { passive: true });
+})();
+
+/* ═══════════════════════════════════════════════════════
+   VIDEO AUTOPLAY — always-on like GIFs
+═══════════════════════════════════════════════════════ */
+(function() {
+  var vidObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      var v = e.target;
+      if (e.isIntersecting) {
+        v.play().catch(function(){});
+      }
+    });
+  }, { threshold: 0.01 });
+
+  function initVideos() {
+    document.querySelectorAll('video').forEach(function(v) {
+      v.muted = true;
+      v.loop = true;
+      v.playsInline = true;
+      v.setAttribute('playsinline', '');
+      v.setAttribute('preload', 'auto');
+      v.play().catch(function(){});
+      vidObs.observe(v);
+    });
+  }
+
+  initVideos();
+
+  /* re-init after tab switch so new page's videos are picked up */
+  var _orig = window.switchTab || null;
+  document.querySelectorAll('.tab-link').forEach(function(a) {
+    a.addEventListener('click', function() {
+      setTimeout(initVideos, 450);
+    });
+  });
+})();
+</script>
+</body>
+</html>
