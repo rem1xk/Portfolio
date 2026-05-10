@@ -199,7 +199,17 @@ footer{padding:34px 80px;border-top:1px solid var(--fg3);
 /* ── GAMBLING PITCH ──────────────────────────────────── */
 .g-pitch{min-height:100vh;display:flex;align-items:center;justify-content:center;
   padding:120px 80px 140px;position:relative;overflow:hidden;overflow:visible}
-.p-icons{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+/* side edge glows */
+#page-p::before,#page-p::after,#page-g::before,#page-g::after{
+  content:'';position:fixed;top:0;bottom:0;width:180px;pointer-events:none;z-index:2}
+#page-p::before{left:0;background:linear-gradient(to right,oklch(0.72 0.19 195 / 0.10),transparent)}
+#page-p::after{right:0;background:linear-gradient(to left,oklch(0.72 0.19 195 / 0.10),transparent)}
+#page-g::before{left:0;background:linear-gradient(to right,oklch(0.80 0.17 75 / 0.10),transparent)}
+#page-g::after{right:0;background:linear-gradient(to left,oklch(0.80 0.17 75 / 0.10),transparent)}
+@media(max-width:768px){
+  #page-p::before,#page-p::after,#page-g::before,#page-g::after{width:80px}
+}
+.p-icons{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;height:100%}
 .p-icon{position:absolute;font-size:clamp(24px,3.5vw,52px);opacity:0.055;
   user-select:none;will-change:transform}
 .g-icons{position:absolute;inset:0;pointer-events:none;z-index:0}
@@ -784,13 +794,14 @@ setTimeout(function() { buildLine('page-p'); }, 120);
     el.className = 'p-icon';
     el.textContent = icons[i % icons.length];
 
+    var pageH = (document.getElementById('page-p') || document.body).scrollHeight || 4000;
     var x = Math.random() * 100;
-    var y = Math.random() * 300; /* spread over tall page */
+    var y = Math.random() * pageH; /* px — spread over full page height */
     var speed = 0.03 + Math.random() * 0.10;
     var rot = Math.random() * 360;
     var scale = 0.5 + Math.random() * 0.8;
 
-    el.style.cssText = 'left:' + x + '%;top:' + y + '%;transform:rotate(' + rot + 'deg) scale(' + scale + ')';
+    el.style.cssText = 'left:' + x + '%;top:' + y + 'px;transform:rotate(' + rot + 'deg) scale(' + scale + ')';
     container.appendChild(el);
     items.push({ el: el, x: x, y: y, speed: speed, rot: rot, scale: scale });
   }
