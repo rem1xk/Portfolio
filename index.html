@@ -580,13 +580,13 @@ function buildLine(pageId) {
     var W = page.offsetWidth;
     var H = page.scrollHeight;
     var cx = W * 0.5;
-    var amp = Math.min(W * 0.22, 240);
+    var amp = Math.min(W * 0.18, 200);
 
     svgEl.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
     svgEl.style.height = H + 'px';
 
     /* collect sections as waypoints */
-    var secs = page.querySelectorAll('.hero, .sec, .contact');
+    var secs = page.querySelectorAll('.hero, .sec, .contact, .g-pitch');
     var pts = [{ x: cx, y: 0 }];
 
     for (var i = 0; i < secs.length; i++) {
@@ -595,9 +595,9 @@ function buildLine(pageId) {
       var h = sec.offsetHeight;
       var side = (i % 2 === 0) ? 1 : -1;
 
-      /* two smooth waypoints per section — clean serpentine */
-      pts.push({ x: cx + side * amp,        y: t + h * 0.25 });
-      pts.push({ x: cx - side * amp * 0.45, y: t + h * 0.75 });
+      /* swing out then return to center — stays centered overall */
+      pts.push({ x: cx + side * amp, y: t + h * 0.3 });
+      pts.push({ x: cx,              y: t + h * 0.7 });
     }
 
     pts.push({ x: cx, y: H });
