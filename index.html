@@ -221,15 +221,46 @@ footer{padding:34px 80px;border-top:1px solid var(--fg3);
   .g3{grid-template-columns:repeat(2,1fr)}
   .about-g{grid-template-columns:1fr;gap:48px}
   footer{padding:28px 32px}
+  .g-pitch{padding:100px 32px 120px}
 }
 @media(max-width:768px){
-  nav{padding:0 20px}
-  .tab-link,.nav-cta{padding:6px 12px;font-size:11px}
-  .hero,.sec,.contact{padding-left:20px;padding-right:20px}
-  .hero{padding-bottom:56px}
-  .g2,.g3{grid-template-columns:1fr}
-  .hero-btns{flex-direction:column;align-items:flex-start}
-  footer{flex-direction:column;gap:10px;text-align:center;padding:24px 20px}
+  :root{--nav:58px}
+  nav{padding:0 16px}
+  .logo{font-size:15px}
+  .tab-link{padding:5px 10px;font-size:10px}
+  .nav-cta{padding:6px 14px;font-size:10px;margin-left:4px}
+  .hero{padding:0 16px 52px;min-height:calc(100svh - var(--nav))}
+  .hero-h1{font-size:clamp(44px,14vw,72px);margin-bottom:24px}
+  .hero-eye{margin-bottom:18px}
+  .hero-sub{font-size:15px;margin-bottom:32px}
+  .hero-btns{flex-direction:column;align-items:flex-start;gap:10px}
+  .btn{padding:12px 24px;font-size:13px}
+  .sec{padding:72px 16px}
+  .sec-h2{margin-bottom:36px}
+  .g2,.g3{grid-template-columns:1fr;gap:14px}
+  .feat .vwrap{aspect-ratio:9/16;max-height:75vh}
+  .feat-ov{padding:24px 20px 20px}
+  .feat-title{font-size:18px}
+  .about-g{grid-template-columns:1fr;gap:36px}
+  .stats{grid-template-columns:1fr 1fr;gap:10px}
+  .stat{padding:20px 16px}
+  .stat-n{font-size:34px}
+  .contact{padding:72px 16px 100px}
+  .contact h2{font-size:clamp(38px,14vw,64px)}
+  .contact p{font-size:15px;margin-bottom:32px}
+  footer{flex-direction:column;gap:8px;text-align:center;padding:24px 16px}
+  .g-pitch{padding:80px 16px 100px}
+  .g-pitch-h{font-size:clamp(28px,9vw,44px)}
+  .g-pitch-p{font-size:14px}
+  .g-pitch-tags{gap:6px}
+  .g-pitch-cta{flex-direction:column;align-items:center}
+  .vcinfo{padding:14px 14px 16px}
+  .vct{font-size:14px}
+  .vcd{font-size:12px}
+}
+@media(max-width:390px){
+  .hero-h1{font-size:40px}
+  .g2,.g3{gap:10px}
 }
 </style>
 </head>
