@@ -320,7 +320,7 @@ footer{padding:34px 80px;border-top:1px solid var(--fg3);
     <p class="sec-label reveal">Featured Works</p>
     <h2 class="sec-h2 reveal">Selected projects</h2>
 
-    <div class="feat reveal">
+    <div class="feat reveal line-wrap" data-wrap-side="right">
       <div class="vwrap r916" style="max-height:85vh">
         <video autoplay muted loop playsinline>
           <source src="videos/motion_4.mp4" type="video/mp4">
@@ -367,7 +367,7 @@ footer{padding:34px 80px;border-top:1px solid var(--fg3);
     <p class="sec-label reveal">Short-form Ads</p>
     <h2 class="sec-h2 reveal">Scroll-stopping<br>reels &amp; ads</h2>
     <div class="grid g3">
-      <div class="vcard reveal">
+      <div class="vcard reveal line-wrap" data-wrap-side="left">
         <div class="vwrap r916">
           <video autoplay muted loop playsinline><source src="videos/reels.mp4" type="video/mp4"></video>
           <div class="vover"></div>
@@ -423,7 +423,7 @@ footer{padding:34px 80px;border-top:1px solid var(--fg3);
     <p class="sec-label reveal">Facebook Ads</p>
     <h2 class="sec-h2 reveal">Facebook ads</h2>
     <div class="grid g2">
-      <div class="vcard reveal">
+      <div class="vcard reveal line-wrap" data-wrap-side="right">
         <div class="vwrap r916">
           <video autoplay muted loop playsinline><source src="videos/motion_5.mp4" type="video/mp4"></video>
           <div class="vover"></div>
@@ -476,6 +476,7 @@ footer{padding:34px 80px;border-top:1px solid var(--fg3);
     <div class="hero-btns reveal" style="justify-content:center">
       <a class="btn btn-w" href="mailto:selegey03@gmail.com">selegey03@gmail.com</a>
       <a class="btn btn-o" href="https://t.me/marcooffc" target="_blank">Telegram</a>
+      <a class="btn btn-o" href="https://www.upwork.com/freelancers/~019668135aba0e6e1f" target="_blank">Upwork</a>
     </div>
   </section>
 
@@ -544,6 +545,7 @@ footer{padding:34px 80px;border-top:1px solid var(--fg3);
       <div class="g-pitch-cta">
         <a class="btn btn-g" href="mailto:selegey03@gmail.com">selegey03@gmail.com</a>
         <a class="btn btn-o" href="https://t.me/marcooffc" target="_blank">Telegram — @marcooffc</a>
+        <a class="btn btn-o" href="https://www.upwork.com/freelancers/~019668135aba0e6e1f" target="_blank">Upwork</a>
       </div>
     </div>
   </section>
@@ -592,12 +594,32 @@ function buildLine(pageId) {
       var h = sec.offsetHeight;
       var side = (i % 2 === 0) ? 1 : -1;
 
-      /* two smooth waypoints per section — clean serpentine, no card collisions */
+      /* two smooth waypoints per section — clean serpentine */
       pts.push({ x: cx + side * amp,        y: t + h * 0.25 });
       pts.push({ x: cx - side * amp * 0.45, y: t + h * 0.75 });
     }
 
     pts.push({ x: cx, y: H });
+
+    /* wrap line around marked cards */
+    var wrapCards = page.querySelectorAll('.line-wrap');
+    for (var wi = 0; wi < wrapCards.length; wi++) {
+      var card = wrapCards[wi];
+      var wSide = card.getAttribute('data-wrap-side') === 'left' ? -1 : 1;
+      var cTop  = card.offsetTop;
+      var cH    = card.offsetHeight;
+      var cL    = card.offsetLeft;
+      var cW    = card.offsetWidth;
+      var margin = 18;
+      /* edge X: just outside the card on the chosen side */
+      var edgeX = wSide > 0
+        ? Math.min(cL + cW + margin, W - 12)
+        : Math.max(cL - margin, 12);
+
+      pts.push({ x: edgeX, y: cTop + cH * 0.15 });
+      pts.push({ x: edgeX, y: cTop + cH * 0.5  });
+      pts.push({ x: edgeX, y: cTop + cH * 0.85 });
+    }
 
     /* sort waypoints by y to ensure monotone path */
     pts.sort(function(a, b) { return a.y - b.y; });
