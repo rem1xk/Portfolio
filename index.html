@@ -585,39 +585,40 @@ function buildLine(pageId) {
     svgEl.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
     svgEl.style.height = H + 'px';
 
-    /* fixed-step waypoints — consistent regardless of section height */
-    var step = Math.min(window.innerHeight * 0.55, 420);
-    var pts = [{ x: cx, y: 0 }];
+    /* one waypoint per step, alternating sides — simple clean serpentine */
+    var step = Math.min(window.innerHeight * 0.7, 500);
     var numSteps = Math.ceil(H / step);
-
-    for (var i = 0; i < numSteps; i++) {
-      var side = (i % 2 === 0) ? 1 : -1;
-      var baseY = step * i;
-      pts.push({ x: cx + side * amp, y: baseY + step * 0.35 });
-      pts.push({ x: cx,              y: baseY + step * 0.75 });
+    var pts = [];
+    pts.push({ x: cx, y: 0 });
+    for (var i = 1; i <= numSteps; i++) {
+      var side = (i % 2 === 0) ? -1 : 1;
+      var y = Math.min(step * i, H);
+      pts.push({ x: cx + side * amp, y: y });
     }
+    if (pts[pts.length - 1].y < H) pts.push({ x: cx, y: H });
 
-    pts.push({ x: cx, y: H });
-
-    /* sort waypoints by y to ensure monotone path */
-    pts.sort(function(a, b) { return a.y - b.y; });
-
-    /* cubic bezier smooth pass */
+    /* catmull-rom → cubic bezier conversion for smooth curves */
     var d = 'M ' + pts[0].x.toFixed(1) + ',' + pts[0].y.toFixed(1);
-    for (var k = 1; k < pts.length; k++) {
-      var p0 = pts[k - 1];
+    for (var k = 0; k < pts.length - 1; k++) {
+      var p0 = pts[Math.max(k - 1, 0)];
       var p1 = pts[k];
-      var dy = (p1.y - p0.y) * 0.48;
-      d += ' C ' + p0.x.toFixed(1) + ',' + (p0.y + dy).toFixed(1) +
-           ' '   + p1.x.toFixed(1) + ',' + (p1.y - dy).toFixed(1) +
-           ' '   + p1.x.toFixed(1) + ',' + p1.y.toFixed(1);
+      var p2 = pts[k + 1];
+      var p3 = pts[Math.min(k + 2, pts.length - 1)];
+      var cp1x = p1.x + (p2.x - p0.x) / 6;
+      var cp1y = p1.y + (p2.y - p0.y) / 6;
+      var cp2x = p2.x - (p3.x - p1.x) / 6;
+      var cp2y = p2.y - (p3.y - p1.y) / 6;
+      d += ' C ' + cp1x.toFixed(1) + ',' + cp1y.toFixed(1) +
+           ' '   + cp2x.toFixed(1) + ',' + cp2y.toFixed(1) +
+           ' '   + p2.x.toFixed(1) + ',' + p2.y.toFixed(1);
     }
 
     mPath.setAttribute('d', d);
     gPath.setAttribute('d', d);
 
     var len = mPath.getTotalLength();
-    lineCache[pageId] = { len: len, mPath: mPath, gPath: gPath, dot: dot, dot2: dot2 };
+    /* store H so tickLine can use it for viewport-centred progress */
+    lineCache[pageId] = { len: len, H: H, mPath: mPath, gPath: gPath, dot: dot, dot2: dot2 };
 
     mPath.style.strokeDasharray = len;
     gPath.style.strokeDasharray = len;
@@ -633,11 +634,11 @@ function tickLine(pageId) {
   if (!d) return;
 
   var scrollTop = window.scrollY;
-  var maxScroll  = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-  var progress   = Math.min(scrollTop / maxScroll, 1);
+  /* target: tip of the line sits at ~60% down the visible viewport */
+  var targetY  = scrollTop + window.innerHeight * 0.6;
+  var progress = Math.min(targetY / Math.max(d.H, 1), 1);
 
-  /* small lead-in so line is visible right away */
-  var drawn  = d.len * (progress + 0.04);
+  var drawn  = d.len * Math.max(progress, 0.03);
   var offset = Math.max(0, d.len - drawn);
 
   d.mPath.style.strokeDashoffset = offset;
