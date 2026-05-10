@@ -60,7 +60,7 @@ nav{position:fixed;inset:0 0 auto;height:var(--nav);z-index:800;
 @keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-30px)}}
 
 /* ── SCROLL LINE ─────────────────────────────────────── */
-.line-svg{position:absolute;top:0;left:0;width:100%;pointer-events:none;z-index:0;overflow:visible;will-change:transform}
+.line-svg{position:absolute;top:0;left:0;width:100%;pointer-events:none;z-index:6;overflow:visible;will-change:transform}
 .l-glow{fill:none;stroke-width:10;opacity:.18;stroke-linecap:round}
 .l-main{fill:none;stroke-width:1.6;opacity:.9;stroke-linecap:round;stroke-linejoin:round}
 .l-dot{transition:opacity .3s}
@@ -320,7 +320,7 @@ footer{padding:34px 80px;border-top:1px solid var(--fg3);
     <p class="sec-label reveal">Featured Works</p>
     <h2 class="sec-h2 reveal">Selected projects</h2>
 
-    <div class="feat reveal line-wrap" data-wrap-side="right">
+    <div class="feat reveal">
       <div class="vwrap r916" style="max-height:85vh">
         <video autoplay muted loop playsinline>
           <source src="videos/motion_4.mp4" type="video/mp4">
@@ -367,7 +367,7 @@ footer{padding:34px 80px;border-top:1px solid var(--fg3);
     <p class="sec-label reveal">Short-form Ads</p>
     <h2 class="sec-h2 reveal">Scroll-stopping<br>reels &amp; ads</h2>
     <div class="grid g3">
-      <div class="vcard reveal line-wrap" data-wrap-side="left">
+      <div class="vcard reveal">
         <div class="vwrap r916">
           <video autoplay muted loop playsinline><source src="videos/reels.mp4" type="video/mp4"></video>
           <div class="vover"></div>
@@ -423,7 +423,7 @@ footer{padding:34px 80px;border-top:1px solid var(--fg3);
     <p class="sec-label reveal">Facebook Ads</p>
     <h2 class="sec-h2 reveal">Facebook ads</h2>
     <div class="grid g2">
-      <div class="vcard reveal line-wrap" data-wrap-side="right">
+      <div class="vcard reveal">
         <div class="vwrap r916">
           <video autoplay muted loop playsinline><source src="videos/motion_5.mp4" type="video/mp4"></video>
           <div class="vover"></div>
@@ -600,26 +600,6 @@ function buildLine(pageId) {
     }
 
     pts.push({ x: cx, y: H });
-
-    /* wrap line around marked cards */
-    var wrapCards = page.querySelectorAll('.line-wrap');
-    for (var wi = 0; wi < wrapCards.length; wi++) {
-      var card = wrapCards[wi];
-      var wSide = card.getAttribute('data-wrap-side') === 'left' ? -1 : 1;
-      var cTop  = card.offsetTop;
-      var cH    = card.offsetHeight;
-      var cL    = card.offsetLeft;
-      var cW    = card.offsetWidth;
-      var margin = 18;
-      /* edge X: just outside the card on the chosen side */
-      var edgeX = wSide > 0
-        ? Math.min(cL + cW + margin, W - 12)
-        : Math.max(cL - margin, 12);
-
-      pts.push({ x: edgeX, y: cTop + cH * 0.15 });
-      pts.push({ x: edgeX, y: cTop + cH * 0.5  });
-      pts.push({ x: edgeX, y: cTop + cH * 0.85 });
-    }
 
     /* sort waypoints by y to ensure monotone path */
     pts.sort(function(a, b) { return a.y - b.y; });
