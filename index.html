@@ -585,19 +585,16 @@ function buildLine(pageId) {
     svgEl.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
     svgEl.style.height = H + 'px';
 
-    /* collect sections as waypoints */
-    var secs = page.querySelectorAll('.hero, .sec, .contact, .g-pitch');
+    /* fixed-step waypoints — consistent regardless of section height */
+    var step = Math.min(window.innerHeight * 0.55, 420);
     var pts = [{ x: cx, y: 0 }];
+    var numSteps = Math.ceil(H / step);
 
-    for (var i = 0; i < secs.length; i++) {
-      var sec = secs[i];
-      var t = sec.offsetTop;
-      var h = sec.offsetHeight;
+    for (var i = 0; i < numSteps; i++) {
       var side = (i % 2 === 0) ? 1 : -1;
-
-      /* swing out then return to center — stays centered overall */
-      pts.push({ x: cx + side * amp, y: t + h * 0.3 });
-      pts.push({ x: cx,              y: t + h * 0.7 });
+      var baseY = step * i;
+      pts.push({ x: cx + side * amp, y: baseY + step * 0.35 });
+      pts.push({ x: cx,              y: baseY + step * 0.75 });
     }
 
     pts.push({ x: cx, y: H });
