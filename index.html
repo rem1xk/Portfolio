@@ -111,6 +111,9 @@ nav{position:fixed;inset:0 0 auto;height:var(--nav);z-index:800;
 .grid{display:grid;gap:20px}
 .g2{grid-template-columns:repeat(2,1fr)}
 .g3{grid-template-columns:repeat(3,1fr)}
+/* shrink video grids so cards aren't too large */
+.sec .grid{max-width:860px;margin-left:auto;margin-right:auto}
+.sec .g3{max-width:960px}
 
 .card-over{position:relative;z-index:8}
 .vcard{border-radius:var(--r);overflow:hidden;cursor:pointer;position:relative;
@@ -196,6 +199,9 @@ footer{padding:34px 80px;border-top:1px solid var(--fg3);
 /* ── GAMBLING PITCH ──────────────────────────────────── */
 .g-pitch{min-height:100vh;display:flex;align-items:center;justify-content:center;
   padding:120px 80px 140px;position:relative;overflow:hidden;overflow:visible}
+.p-icons{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.p-icon{position:absolute;font-size:clamp(24px,3.5vw,52px);opacity:0.055;
+  user-select:none;will-change:transform}
 .g-icons{position:absolute;inset:0;pointer-events:none;z-index:0}
 .g-icon{position:absolute;font-size:clamp(28px,4vw,56px);opacity:0.07;
   user-select:none;will-change:transform;filter:drop-shadow(0 0 12px var(--gold))}
@@ -301,6 +307,9 @@ footer{padding:34px 80px;border-top:1px solid var(--fg3);
     <circle class="l-dot" id="p-dot" r="4" cx="0" cy="-200" opacity="0"/>
     <circle class="l-dot" id="p-dot2" r="2.5" cx="0" cy="-200" opacity="0" style="fill:var(--fg)"/>
   </svg>
+
+  <!-- floating video-themed background icons -->
+  <div class="p-icons" id="p-icons-bg"></div>
 
   <!-- HERO -->
   <section class="hero" id="p-hero">
@@ -758,6 +767,44 @@ window.addEventListener('resize', function() {
 ═══════════════════════════════════════════════════════ */
 setupReveal(document.getElementById('page-p'));
 setTimeout(function() { buildLine('page-p'); }, 120);
+
+/* ═══════════════════════════════════════════════════════
+   PORTFOLIO FLOATING ICONS (video / motion theme)
+═══════════════════════════════════════════════════════ */
+(function() {
+  var icons = ['🎬','🎥','📽️','🎞️','✨','🖥️','📱','⚡','🎯','🔥','💡','🎨','🎭','📸','🌀','▶️','🎙️','💫'];
+  var container = document.getElementById('p-icons-bg');
+  if (!container) return;
+
+  var items = [];
+  var count = 30;
+
+  for (var i = 0; i < count; i++) {
+    var el = document.createElement('span');
+    el.className = 'p-icon';
+    el.textContent = icons[i % icons.length];
+
+    var x = Math.random() * 100;
+    var y = Math.random() * 300; /* spread over tall page */
+    var speed = 0.03 + Math.random() * 0.10;
+    var rot = Math.random() * 360;
+    var scale = 0.5 + Math.random() * 0.8;
+
+    el.style.cssText = 'left:' + x + '%;top:' + y + '%;transform:rotate(' + rot + 'deg) scale(' + scale + ')';
+    container.appendChild(el);
+    items.push({ el: el, x: x, y: y, speed: speed, rot: rot, scale: scale });
+  }
+
+  window.addEventListener('scroll', function() {
+    if (activePage !== 'page-p') return;
+    var sy = window.scrollY;
+    for (var i = 0; i < items.length; i++) {
+      var it = items[i];
+      var ty = -sy * it.speed;
+      it.el.style.transform = 'translate(0,' + ty + 'px) rotate(' + it.rot + 'deg) scale(' + it.scale + ')';
+    }
+  }, { passive: true });
+})();
 
 /* ═══════════════════════════════════════════════════════
    CASINO FLOATING ICONS
