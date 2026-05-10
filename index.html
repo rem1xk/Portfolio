@@ -60,7 +60,7 @@ nav{position:fixed;inset:0 0 auto;height:var(--nav);z-index:800;
 @keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-30px)}}
 
 /* ── SCROLL LINE ─────────────────────────────────────── */
-.line-svg{position:absolute;top:0;left:0;width:100%;pointer-events:none;z-index:0;overflow:visible}
+.line-svg{position:absolute;top:0;left:0;width:100%;pointer-events:none;z-index:0;overflow:visible;will-change:transform}
 .l-glow{fill:none;stroke-width:10;opacity:.18;stroke-linecap:round}
 .l-main{fill:none;stroke-width:1.6;opacity:.9;stroke-linecap:round;stroke-linejoin:round}
 .l-dot{transition:opacity .3s}
@@ -68,6 +68,7 @@ nav{position:fixed;inset:0 0 auto;height:var(--nav);z-index:800;
 #svg-p .l-dot{fill:var(--cyan);filter:drop-shadow(0 0 5px var(--cyan))}
 #svg-g .l-glow,#svg-g .l-main{stroke:var(--gold)}
 #svg-g .l-dot{fill:var(--gold);filter:drop-shadow(0 0 5px var(--gold))}
+@media(max-width:768px){.l-glow{display:none}}
 
 /* ── HERO ────────────────────────────────────────────── */
 .hero{min-height:calc(100vh - var(--nav));display:flex;flex-direction:column;
@@ -642,18 +643,20 @@ function tickLine(pageId) {
   d.mPath.style.strokeDashoffset = offset;
   d.gPath.style.strokeDashoffset = offset;
 
-  /* move glowing dot to tip */
-  try {
-    var safe = Math.min(drawn, d.len - 1);
-    var pt   = d.mPath.getPointAtLength(safe);
-    d.dot.setAttribute('cx',  pt.x);
-    d.dot.setAttribute('cy',  pt.y);
-    d.dot2.setAttribute('cx', pt.x);
-    d.dot2.setAttribute('cy', pt.y);
-    var vis = (progress > 0.005) ? '1' : '0';
-    d.dot.setAttribute('opacity',  vis);
-    d.dot2.setAttribute('opacity', vis);
-  } catch(e) {}
+  /* move glowing dot to tip — skip on mobile for perf */
+  if (window.innerWidth > 768) {
+    try {
+      var safe = Math.min(drawn, d.len - 1);
+      var pt   = d.mPath.getPointAtLength(safe);
+      d.dot.setAttribute('cx',  pt.x);
+      d.dot.setAttribute('cy',  pt.y);
+      d.dot2.setAttribute('cx', pt.x);
+      d.dot2.setAttribute('cy', pt.y);
+      var vis = (progress > 0.005) ? '1' : '0';
+      d.dot.setAttribute('opacity',  vis);
+      d.dot2.setAttribute('opacity', vis);
+    } catch(e) {}
+  }
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -730,7 +733,15 @@ document.getElementById('cta-contact').addEventListener('click', function(e) {
 /* ═══════════════════════════════════════════════════════
    SCROLL + RESIZE
 ═══════════════════════════════════════════════════════ */
-window.addEventListener('scroll', function() { tickLine(activePage); }, { passive: true });
+var rafPending = false;
+window.addEventListener('scroll', function() {
+  if (rafPending) return;
+  rafPending = true;
+  requestAnimationFrame(function() {
+    tickLine(activePage);
+    rafPending = false;
+  });
+}, { passive: true });
 
 var resizeTimer;
 window.addEventListener('resize', function() {
