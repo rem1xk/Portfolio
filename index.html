@@ -152,8 +152,9 @@ nav{position:fixed;inset:0 0 auto;height:var(--nav);z-index:800;
   padding:3px 9px;border-radius:100px;background:var(--fg4);color:var(--fg2)}
 
 /* featured */
-.feat{border-radius:var(--r);overflow:hidden;cursor:pointer;position:relative;margin-bottom:20px}
-.feat .vwrap{aspect-ratio:9/16;max-width:480px;margin:0 auto}
+.feat{cursor:pointer;position:relative;margin:0 auto 20px;max-width:480px}
+.feat .vwrap{border-radius:var(--r);overflow:hidden}
+.feat .vwrap{aspect-ratio:9/16}
 .feat::before{content:'';position:absolute;inset:0;border-radius:var(--r);
   border:1px solid var(--fg3);z-index:5;pointer-events:none}
 .feat-ov{position:absolute;bottom:0;left:0;right:0;padding:40px 40px 36px;
