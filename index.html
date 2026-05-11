@@ -153,7 +153,7 @@ nav{position:fixed;inset:0 0 auto;height:var(--nav);z-index:800;
 
 /* featured */
 .feat{border-radius:var(--r);overflow:hidden;cursor:pointer;position:relative;margin-bottom:20px}
-.feat .vwrap{aspect-ratio:21/9}
+.feat .vwrap{aspect-ratio:9/16;max-width:480px;margin:0 auto}
 .feat::before{content:'';position:absolute;inset:0;border-radius:var(--r);
   border:1px solid var(--fg3);z-index:5;pointer-events:none}
 .feat-ov{position:absolute;bottom:0;left:0;right:0;padding:40px 40px 36px;
@@ -259,7 +259,7 @@ footer{padding:34px 80px;border-top:1px solid var(--fg3);
   .sec{padding:72px 16px}
   .sec-h2{margin-bottom:36px}
   .g2,.g3{grid-template-columns:1fr;gap:14px}
-  .feat .vwrap{aspect-ratio:9/16;max-height:75vh}
+  .feat .vwrap{max-width:85vw}
   .feat-ov{padding:24px 20px 20px}
   .feat-title{font-size:18px}
   .about-g{grid-template-columns:1fr;gap:36px}
