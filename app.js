@@ -85,3 +85,53 @@ dialog.addEventListener('close', () => {
 player.addEventListener('error', () => { if(player.getAttribute('src')) document.querySelector('.video-error').hidden=false; });
 let scrollQueued=false;
 window.addEventListener('scroll',()=>{if(!scrollQueued){scrollQueued=true;requestAnimationFrame(()=>{document.body.classList.toggle('scrolled',window.scrollY>20);scrollQueued=false;});}},{passive:true});
+
+// Draw a continuous path in document space; scroll changes only the stroke length.
+(() => {
+  const main = document.querySelector('main');
+  const svg = document.querySelector('.scroll-thread');
+  const path = svg.querySelector('.thread-light');
+  const track = svg.querySelector('.thread-track');
+  const tip = svg.querySelector('.thread-tip');
+  let length = 0, height = 1, queued = false;
+  function draw() {
+    queued = false;
+    if (!length) return;
+    const top = main.getBoundingClientRect().top;
+    const progress = Math.max(0,Math.min(1,(innerHeight * .72 - top) / height));
+    let low = 0, high = length;
+    const targetY = progress * height;
+    for(let i=0;i<13;i++) {
+      const middle = (low+high)/2;
+      if(path.getPointAtLength(middle).y < targetY) low = middle; else high = middle;
+    }
+    const end = reduceMotion.matches ? length : (low+high)/2;
+    path.style.strokeDashoffset = length - end;
+    const point = path.getPointAtLength(end);
+    tip.setAttribute('cx', point.x); tip.setAttribute('cy', point.y);
+  }
+  function requestDraw() { if(!queued) { queued = true; requestAnimationFrame(draw); } }
+  function build() {
+    const w = main.clientWidth; height = main.offsetHeight;
+    if(!w || !height) return;
+    const mobile = w < 761;
+    const left = w * (mobile ? .055 : .07), right = w * (mobile ? .945 : .93);
+    const segments = Math.max(3,Math.round(height/(mobile ? 620 : 800)));
+    const step = height / segments;
+    let d = `M ${w*.68} 0`;
+    for(let i=0;i<segments;i++) {
+      const startY = i * step, endY = (i+1) * step;
+      const x = i % 2 === 0 ? right : left;
+      const prev = i === 0 ? w*.68 : i%2===0 ? left : right;
+      d += ` C ${prev} ${startY+step*.5}, ${x} ${endY-step*.5}, ${x} ${endY}`;
+    }
+    svg.setAttribute('viewBox',`0 0 ${w} ${height}`);
+    path.setAttribute('d',d); track.setAttribute('d',d);
+    length = path.getTotalLength(); path.style.strokeDasharray = length;
+    draw();
+  }
+  new ResizeObserver(build).observe(main);
+  addEventListener('scroll',requestDraw,{passive:true});
+  reduceMotion.addEventListener('change',draw);
+  build();
+})();
